@@ -17,11 +17,22 @@
 
 \section*{Problem 5.9}
 Consider a multivariate regression problem in which we predict the height of an individual in meters and their weight in kilos from some data $x$. Here, the units take quite different values. What problems do you see this causing? Propose two solutions to these problems.
+ 
+\subsection{Solution}
+The problem is that both of the variables we want to predict follow different distributions and have different range of values. In multivariate prediction we assume that the variables are independent, but in the case of weight and height, they are not. For example, if we have a very tall person, we can expect that their weight will be higher than the average. Therefore their error is also not independent because they are correlated. This multicollinearity affects the performance of the model and reduces the precision. One solution could be to normalize both variables to be within a range of 0 and 1. Other could be 
+to use a different model that can handle multicollinearity, like a neural network. Because neural networks can learn the correlation between the variables and adjust the weights accordingly.
 
 \vspace{5em}
 
 \section*{Problem 6.6}
 Which of the functions in Figure~6.11 from the book is convex? Justify your answer. Characterize each of the points 1--7 as (i) a local minimum, (ii) the global minimum, or (iii) neither.
+
+\subsection{Solution}
+A function is convex if its second derivative is positive. Furthermore, if the function is convex, it should look like a bowl; if we draw a line between two points of the function, the function should lie below the line. Therefore, there is only one convex function, and that is \textbf{B}. The points are characterized as follows: 
+\begin{enumerate}
+    \item Neither
+    \item Global minimum
+\end{enumerate}
 
 \vspace{5em}
 
@@ -29,6 +40,49 @@ Which of the functions in Figure~6.11 from the book is convex? Justify your answ
 Show that the momentum term \( m_t \) (equation (6.11)) is an infinite weighted sum of the gradients at the previous iterations and derive an expression for the coefficients (weights) of that sum.
 
 
+\subsection{Solution}
+
+We start with the momentum update formula:
+\begin{equation}
+    m_{t+1} = \beta m_t + (1 - \beta) g_t
+\end{equation}
+where:
+\begin{itemize}
+    \item $m_t$ is the momentum term at iteration $t$
+    \item $\beta$ is the momentum coefficient
+    \item $g_t$ is the gradient at iteration $t$
+\end{itemize}
+
+Expanding $m_t$ recursively:
+\begin{equation}
+    m_t = \beta m_{t-1} + (1 - \beta) g_{t-1}
+\end{equation}
+Substituting $m_{t-1}$:
+\begin{equation}
+    m_{t-1} = \beta m_{t-2} + (1 - \beta) g_{t-2}
+\end{equation}
+Continuing this expansion back to $t = 0$, assuming $m_0 = 0$:
+\begin{equation}
+    m_{t+1} = (1 - \beta) g_t + \beta (1 - \beta) g_{t-1} + \beta^2 (1 - \beta) g_{t-2} + \dots + \beta^t (1 - \beta) g_0
+\end{equation}
+
+
+This can be rewritten:
+\begin{equation}
+    m_{t+1} = \sum_{k=0}^{t} \beta^k (1 - \beta) g_{t-k}
+\end{equation}
+This equation shows that the momentum term is an exponentially weighted moving average of past gradients, where recent gradients have higher weights due to the $\beta^k$ term decreasing as $k$ increases.
+
+The weight for each past gradient $g_{t-k}$ is given by:
+\begin{equation}
+    w_k = \beta^k (1 - \beta)
+\end{equation}
+The sum of these weights is:
+\begin{equation}
+    \sum_{k=0}^{\infty} w_k = (1 - \beta) \sum_{k=0}^{\infty} \beta^k = (1 - \beta) \frac{1}{1 - \beta} = 1
+\end{equation}
+This confirms that the gradient contributions form a proper weighted sum.
+The momentum term $m_t$ is an infinite weighted sum of past gradients, with exponentially decreasing weights given by $\beta^k (1 - \beta)$. The larger $\beta$ is, the more influence past gradients have, smoothing out the updates and accelerating convergence in deep learning optimizers like SGD with momentum.
 
 
 \end{document}
